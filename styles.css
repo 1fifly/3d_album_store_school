@@ -1,5 +1,39 @@
 * {
+    font-family: 'Bahnschrift Condensed';
     overflow: hidden;
     margin: 0;
     padding: 0;
+    user-select: none;
+}
+
+#left {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    color: white;
+    font-weight: 100;
+    margin: 1%;
+}
+
+#right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: white;
+    font-weight: 100;
+    margin: 1%;
+}
+
+.title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    margin: 3%;
+    font-size: 3vw;
+}
+
+.prototype {
+    font-weight: 100;
+    margin-top: -6%;
 }
