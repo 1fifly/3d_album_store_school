@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
 const renderer = new THREE.WebGLRenderer({ antialias: false });
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -16,8 +17,8 @@ const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerH
 camera.position.set(0, 7.5, 40);
 
 const controls = new FirstPersonControls(camera, renderer.domElement);
-controls.lookSpeed = 0.1; // Reduced speed for smoother control
-controls.movementSpeed = 3; // Adjust movement speed
+controls.lookSpeed = 0.05;
+controls.movementSpeed = 1;
 controls.noFly = true;
 controls.lookVertical = true;
 controls.verticalMin = Math.PI / 6;
@@ -28,6 +29,9 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
 directionalLight.position.set(10, 10, 10);
 scene.add(ambientLight, directionalLight);
+
+const controls1 = new PointerLockControls(camera, document.body);
+controls1.lock();
 
 const loader = new GLTFLoader().setPath('/3d/');
 loader.load(
@@ -56,9 +60,13 @@ function onMouseClick(event) {
     gsap.to(camera.position, {
         x: 0,
         y: 7.5,
-        z: -25,
-        duration: 3, // Reduced duration
-        ease: 'power2.out',
+        z: -22.5,
+        duration: 3,
+        ease: 'strong.inOut',
+        onStart: () => {
+            const title = document.querySelector('.title');
+            title.style.display = "none";
+        },
         onComplete: () => {
             controls.enabled = true;
         }
@@ -75,7 +83,7 @@ window.addEventListener('resize', () => {
 
 function animate() {
     requestAnimationFrame(animate);
-    controls.update(0.05); // Update delta for smoother control handling
+    controls.update(0.05);
     renderer.render(scene, camera);
 }
 
