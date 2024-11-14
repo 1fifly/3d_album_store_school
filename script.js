@@ -2,13 +2,15 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { Sky } from 'three/addons/objects/Sky.js';
+import { MathUtils, Vector3 } from 'three';
 
 const renderer = new THREE.WebGLRenderer({ antialias: false });
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-renderer.shadowMap.enabled = false;
+renderer.shadowMap.enabled = true;  
 
 document.body.appendChild(renderer.domElement);
 
@@ -25,10 +27,53 @@ controls.verticalMin = Math.PI / 6;
 controls.verticalMax = Math.PI / 3;
 controls.enabled = false;
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-directionalLight.position.set(10, 10, 10);
-scene.add(ambientLight, directionalLight);
+const sky = new Sky();
+sky.scale.setScalar(450000);
+
+const phi = MathUtils.degToRad(280);
+const theta = MathUtils.degToRad(180);
+const sunPosition = new Vector3().setFromSphericalCoords(1, phi, theta);
+sky.material.uniforms.sunPosition.value = sunPosition;
+
+scene.add(sky);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+directionalLight.position.set(50, 50, 30);
+directionalLight.castShadow = true; 
+
+directionalLight.shadow.mapSize.width = 2048;
+directionalLight.shadow.mapSize.height = 2048;
+directionalLight.shadow.camera.near = 0.5;
+directionalLight.shadow.camera.far = 500;
+directionalLight.shadow.camera.left = -50;
+directionalLight.shadow.camera.right = 50;
+directionalLight.shadow.camera.top = 50;
+directionalLight.shadow.camera.bottom = -50;
+
+scene.add(directionalLight);
+
+const hemisphereLight = new THREE.HemisphereLight(0xfff2cc, 0x999999, 1);
+scene.add(hemisphereLight);
+
+const spotLight = new THREE.SpotLight(0xffffff);
+spotLight.position.set(0, 17.5, -22.5);
+spotLight.intensity = 100;
+spotLight.penumbra = 0.3;
+spotLight.castShadow = true;
+
+spotLight.shadow.mapSize.width = 1024;
+spotLight.shadow.mapSize.height = 1024;
+spotLight.shadow.camera.near = 500;
+spotLight.shadow.camera.far = 4000;
+spotLight.shadow.camera.fov = 30;
+
+const target = new THREE.Object3D();
+target.position.set(0, 0, -22.5);
+scene.add(target);
+
+spotLight.target = target;
+
+scene.add(spotLight);
 
 const controls1 = new PointerLockControls(camera, document.body);
 controls1.lock();
@@ -40,8 +85,8 @@ loader.load(
         const mesh = gltf.scene;
         mesh.traverse((child) => {
             if (child.isMesh) {
-                child.castShadow = false;
-                child.receiveShadow = false;
+                child.castShadow = true; 
+                child.receiveShadow = true;
             }
         });
         mesh.position.set(0, 1.05, -1);
