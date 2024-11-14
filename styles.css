@@ -31,6 +31,9 @@
     color: white;
     margin: 3%;
     font-size: 3vw;
+    background-color: rgba(30,30,30,0.9);
+    padding: 1.5%;
+    clip-path: polygon(0 20%,10% 0,100% 0,100% calc(100% - 20%),calc(100% - 10%) 100%,0 100%);
 }
 
 .prototype {
